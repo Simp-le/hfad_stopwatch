@@ -2,16 +2,15 @@ package com.hfad.stopwatch
 
 import android.os.Bundle
 import android.os.SystemClock
-import android.widget.Button
-import android.widget.Chronometer
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.hfad.stopwatch.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
 
-    private lateinit var stopwatch: Chronometer
     private var running = false
     private var offset: Long = 0
 
@@ -19,16 +18,14 @@ class MainActivity : AppCompatActivity() {
     private val BASE_KEY = "base"
     private val OFFSET_KEY = "offset"
 
-    private fun setBaseTime() {
-        stopwatch.base = SystemClock.elapsedRealtime() - offset
-    }
-    private fun saveOffset() {
-        offset = SystemClock.elapsedRealtime() - stopwatch.base
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        // Creates an ActivityMainBinding object that is linked to the layout
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        // Set view to the root view
+        val view = binding.root
+        // Pass the root view to setContentView()
+        setContentView(view)
 
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -37,54 +34,41 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        stopwatch = findViewById(R.id.stopwatch)
-
         if (savedInstanceState != null) {
             running = savedInstanceState.getBoolean(RUNNING_KEY)
             offset = savedInstanceState.getLong(OFFSET_KEY)
 
             if (running) {
-                stopwatch.base = savedInstanceState.getLong(BASE_KEY)
-                stopwatch.start()
+                binding.stopwatch.base = savedInstanceState.getLong(BASE_KEY)
+                binding.stopwatch.start()
             } else setBaseTime()
         }
 
 
-        val startButton = findViewById<Button>(R.id.start_button)
-        startButton.setOnClickListener {
+        binding.startButton.setOnClickListener {
             if (!running) {
                 running = true
                 setBaseTime()
-                stopwatch.start()
+                binding.stopwatch.start()
             }
         }
 
-        val pauseButton = findViewById<Button>(R.id.pause_button)
-        pauseButton.setOnClickListener {
+        binding.pauseButton.setOnClickListener {
             if (running) {
                 running = false
                 saveOffset()
-                stopwatch.stop()
+                binding.stopwatch.stop()
             }
         }
 
-        val resetButton = findViewById<Button>(R.id.reset_button)
-        resetButton.setOnClickListener {
+        binding.resetButton.setOnClickListener {
             if (running) {
                 running = false
-                stopwatch.stop()
+                binding.stopwatch.stop()
             }
             offset = 0
             setBaseTime()
         }
-    }
-
-    // Save the bundle for the next onCreate() call. There is no Bundle object in onDestroy()
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(RUNNING_KEY, running)
-        outState.putLong(BASE_KEY, stopwatch.base)
-        outState.putLong(OFFSET_KEY, offset)
     }
 
     override fun onResume() {
@@ -92,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         if (running) {
             setBaseTime()
             offset = 0
-            stopwatch.start()
+            binding.stopwatch.start()
         }
     }
 
@@ -100,7 +84,22 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         if (running){
             saveOffset()
-            stopwatch.stop()
+            binding.stopwatch.stop()
         }
+    }
+
+    // Save the bundle for the next onCreate() call. There is no Bundle object in onDestroy()
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(RUNNING_KEY, running)
+        outState.putLong(BASE_KEY, binding.stopwatch.base)
+        outState.putLong(OFFSET_KEY, offset)
+    }
+
+    private fun setBaseTime() {
+        binding.stopwatch.base = SystemClock.elapsedRealtime() - offset
+    }
+    private fun saveOffset() {
+        offset = SystemClock.elapsedRealtime() - binding.stopwatch.base
     }
 }
