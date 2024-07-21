@@ -1,5 +1,5 @@
 # Description
-A simple stopwatch with "Start", "Pause" and "Reset" buttons. The stopwatch retains its state when the screen orientation changes. When exiting the application and when the application is blocked by another activity, the stopwatch pauses its work and resumes it as soon as focus is returned.
+A simple stopwatch with "Start", "Pause" and "Reset" buttons. The stopwatch retains its state when the screen orientation changes. When exiting the application and when the application is blocked by another activity, the stopwatch pauses its work and resumes it as soon as focus is returned. View binding is used to link activity and layout.
 
 # Screenshots
 Main page (Portrait):
